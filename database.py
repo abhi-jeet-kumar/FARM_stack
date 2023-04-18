@@ -24,9 +24,12 @@ async def fetch_all_todos():
     return todos
 
 async def create_todo_data(todo: Todo):
-    document = todo
-    result = await collection.insert_one(document)
-    return document
+    todos = await fetch_all_todos()
+    for todo_existing in dict(todos):
+        if todo_existing['title'] == todo.title:
+            return {"error": "Todo with title: {} already exists".format(todo.title)}
+    result = await collection.insert_one(todo.dict())
+    return todo
 
 async def update_todo_data(title: str, description: str):
     query = {"title": title}

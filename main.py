@@ -1,9 +1,12 @@
+import json
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import (create_todo_data, delete_todo_data, fetch_all_todos,
                       fetch_one_todo, update_todo_data)
 from model import Todo
+import logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = FastAPI()
 
@@ -31,11 +34,8 @@ async def get_todo_by_title(title: int):
 
 @app.post('/api/todo')
 async def create_todo(todo: Todo):
-    response = await create_todo_data(todo.dict())
-    if response:
-        return response
-    
-    raise HTTPException(status_code=400, detail='Todo already exists')
+    response = await create_todo_data(todo)
+    return response
 
 @app.put('/api/todo/{title}')
 async def update_todo_by_title(title: int, data):
